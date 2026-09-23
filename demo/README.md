@@ -20,6 +20,8 @@ demo/start before the build     13 passed, 10 red (the criterion tests)
 round 2 (from spec-v2)          23 passed
 round 1 (from spec-v1)          7 of 10 criteria FAIL
 blind handoff, Sep 23, tests withheld   10 of 10 author tests pass (BLIND-HANDOFF-REPORT.md)
+step 1 cold, Sep 23             9 min to a 268-line draft; found the skill by name; did not open demo/ or the red tests
+step 4 cold, Sep 23             6 min, including its own check of all ten criteria against the API
 ```
 
 ## Before class
@@ -33,32 +35,42 @@ blind handoff, Sep 23, tests withheld   10 of 10 author tests pass (BLIND-HANDOF
 **7:15** `sec-3`, then `demo-request` — read the three-line excerpt, say the full transcript is in the
 repo. Ask the room for two undecided things. `demo-loop`, then switch.
 
-**7:19 · Step 1 — draft from the recording (4 min).** Type, aloud:
+**7:19 · Step 1 — draft from the recording (2 min — do not wait for it).** Type, aloud:
 > Draft a feature specification for OBJ support from `docs/meetings/2026-09-18-feature-review.md`,
 > using the `how-to-write-a-spec` skill. Write it to `specs/obj-support.md`.
 
-Narrate: it is reading a 24-minute meeting; section 6 is coming from the api-conventions skill.
+Narrate for a minute: it is reading a 24-minute meeting; it found the skill by name; section 6 is
+coming from the api-conventions skill. Then: *"This takes it several minutes — nine, this morning.
+Here is what the same prompt produced then."* Open `demo/spec-v1.md` and go to step 2. When the live
+draft lands, give it ten seconds on screen: the same eight sections, a different length. Drafts vary
+run to run; the one being reviewed is the one that has been read.
 
-**7:23 · Step 2 — read it as a human (6 min).** Open `demo/spec-v1.md` beside what it produced. Find
+**7:21 · Step 2 — read it as a human (6 min).** Open `demo/spec-v1.md` beside what it produced. Find
 the three silences in `REVIEW-NOTES.md`, each with the timestamp where the room decided it. Point at
 §8 "None." — the room parked units at [10:17]. Land the line: *well organised, well written,
 complete-looking, and quiet in three places the room had decided.*
 
-**7:29 · Step 3 — fix and approve (2 min).** `cp demo/spec-v2.md specs/obj-support.md`. Commit.
+**7:27 · Step 3 — fix and approve (2 min).** If the step-1 session is still running, stop it first
+(Ctrl-C twice) — its draft is not the one being shipped. `cp demo/spec-v2.md specs/obj-support.md`.
+Commit.
 
-**7:31 · Step 4 — blind handoff (5 min).** Cold session, scroll up to show it is empty:
+**7:29 · Step 4 — blind handoff (up to 7 min).** Cold session, scroll up to show it is empty:
 > Implement the feature specified in `specs/obj-support.md`. Follow the conventions already in the repository.
 
 Do **not** ask it to write tests. If it asks a question, write the question on screen and tell it to
-proceed on its best judgement.
+proceed on its best judgement. While it works (six minutes this morning, including its own check
+against the API): put `specs/obj-support.md` §3 on screen and walk through criteria 2, 3 and 7 — the
+ones slide 16 did not show — and §8, the parked question. **If it is still running at 7:37**, stop it
+(Ctrl-C twice), show `demo/BLIND-HANDOFF-REPORT.md` — this morning's run of the same prompt, ten of
+ten — and take the fallback: `git stash -u && git checkout main && make test`.
 
 **7:36 · Step 5 — your tests (3 min).** `make test`. Say who wrote `tests/test_obj_support.py` and when.
 Then the browser: upload `cube.obj`, watch it render, the format tag now reads `obj stl`.
 
-**7:40 · Step 6 — the exhibit (4 min).** `bash demo/run-round-1.sh` — *this is what version one's
+**7:39 · Step 6 — the exhibit (4 min).** `bash demo/run-round-1.sh` — *this is what version one's
 criteria produced: seven of ten.* Somebody will say "just fix the parser." The fix was the document.
 
-**7:44** back to `blind-handoff`, `what-you-saw`.
+**7:43** back to `blind-handoff`, `what-you-saw`.
 
 ## Fallbacks
 - **Slow:** narrate the transcript → spec story.
