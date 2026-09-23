@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MeshView</title>
+<style>
+  :root { --ink:#0F1D33; --muted:#55607A; --paper:#F7F5EF; --surface:#FDFCF8; --rule:#DEDAD0; --accent:#1E407C; --danger:#8A5200; }
+  * { box-sizing:border-box } body { margin:0; font-family:"IBM Plex Sans", system-ui, sans-serif; color:var(--ink); background:var(--paper); display:grid; grid-template-columns:340px 1fr; height:100vh }
+  aside { border-right:1px solid var(--rule); padding:20px; overflow:auto; background:var(--surface) }
+  h1 { font-size:18px; margin:0 0 4px } .sub { color:var(--muted); font-size:13px; margin:0 0 18px }
+  .btn { display:inline-block; padding:8px 14px; border:1px solid var(--accent); color:var(--accent); background:transparent; border-radius:4px; cursor:pointer; font-size:14px }
+  .btn.primary { background:var(--accent); color:#fff }
+  input[type=file] { display:none }
+  ul { list-style:none; padding:0; margin:18px 0 0 } li { padding:10px 12px; border:1px solid var(--rule); border-radius:4px; margin-bottom:8px; cursor:pointer; background:#fff }
+  li.active { border-color:var(--accent); box-shadow:inset 3px 0 0 var(--accent) } li .meta { color:var(--muted); font-size:12px; margin-top:3px }
+  .tag { font-family:"IBM Plex Mono", monospace; font-size:11px; padding:1px 6px; border:1px solid var(--rule); border-radius:3px; color:var(--muted); margin-left:6px }
+  #msg { margin-top:12px; font-size:13px; color:var(--danger); min-height:18px; white-space:pre-wrap }
+  main { position:relative } canvas { display:block; width:100%; height:100% }
+  #hud { position:absolute; left:16px; bottom:14px; font-family:"IBM Plex Mono", monospace; font-size:12px; color:var(--muted); background:rgba(253,252,248,.85); padding:6px 10px; border-radius:4px }
+</style>
+</head>
+<body>
+<aside>
+  <h1>MeshView</h1>
+  <p class="sub">Upload a 3D model and look at it.</p>
+  <label class="btn primary">Upload model<input id="file" type="file"></label>
+  <span class="tag" id="formats">stl</span>
+  <div id="msg"></div>
+  <ul id="list"></ul>
+</aside>
+<main>
+  <canvas id="c"></canvas>
+  <div id="hud">nothing loaded</div>
+</main>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+const canvas = document.getElementById("c"), hud = document.getElementById("hud"), msg = document.getElementById("msg"), list = document.getElementById("list");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true }); renderer.setPixelRatio(devicePixelRatio);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0xF7F5EF);
+const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 1e6); camera.position.set(3, 2, 4);
+const controls = new OrbitControls(camera, canvas); controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x777788, 1.1)); const dl = new THREE.DirectionalLight(0xffffff, 0.8); dl.position.set(3, 5, 4); scene.add(dl);
+scene.add(new THREE.GridHelper(10, 20, 0xC9C4B6, 0xE2DED4));
+let current = null;
+function resize() { const w = canvas.clientWidth, h = canvas.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+new ResizeObserver(resize).observe(canvas); resize();
+(function loop() { controls.update(); renderer.render(scene, camera); requestAnimationFrame(loop); })();
+
+function show(mesh, meta) {
+  if (current) { scene.remove(current); current.geometry.dispose(); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(mesh.vertices.flat(), 3));
+  g.setIndex(mesh.faces.flat()); g.computeVertexNormals();
+  current = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: 0x1E407C, metalness: 0.1, roughness: 0.6, side: THREE.DoubleSide }));
+  scene.add(current);
+  const box = new THREE.Box3().setFromObject(current), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+  const r = Math.max(size.x, size.y, size.z) || 1; current.position.sub(c);
+  camera.position.set(r * 1.6, r * 1.2, r * 1.9); camera.near = r / 100; camera.far = r * 100; camera.updateProjectionMatrix(); controls.target.set(0, 0, 0);
+  hud.textContent = `${meta.name}  ·  ${meta.format.toUpperCase()}  ·  ${mesh.triangle_count.toLocaleString()} triangles  ·  ${size.x.toFixed(2)} × ${size.y.toFixed(2)} × ${size.z.toFixed(2)}`;
+}
+async function open(m, li) {
+  [...list.children].forEach(x => x.classList.remove("active")); li.classList.add("active");
+  const r = await fetch(`/models/${m.id}/mesh`); if (!r.ok) { msg.textContent = (await r.json()).detail; return; }
+  show(await r.json(), m);
+}
+async function refresh(selectId) {
+  const { items } = await (await fetch("/models")).json(); list.innerHTML = "";
+  for (const m of items) {
+    const li = document.createElement("li");
+    li.innerHTML = `<div>${m.name}<span class="tag">${m.format}</span></div><div class="meta">${m.triangle_count.toLocaleString()} triangles · ${(m.size_bytes/1024).toFixed(1)} KB</div>`;
+    li.onclick = () => open(m, li); list.appendChild(li);
+    if (m.id === selectId) open(m, li);
+  }
+}
+document.getElementById("file").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return; msg.textContent = "";
+  const r = await fetch("/models?name=" + encodeURIComponent(f.name), { method: "POST", body: f }); const body = await r.json();
+  if (!r.ok) { msg.textContent = `${body.code}: ${body.detail}` + (body.line ? ` (line ${body.line})` : ""); e.target.value = ""; return; }
+  e.target.value = ""; refresh(body.id);
+};
+fetch("/formats").then(r => r.json()).then(b => { document.getElementById("formats").textContent = b.formats.join(" "); }).catch(() => {});
+refresh();
+</script>
+</body>
+</html>
