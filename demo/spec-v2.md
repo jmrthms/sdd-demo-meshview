@@ -27,12 +27,14 @@ see it.
 4. Given a face that references a vertex index outside the range defined, when the file is uploaded,
    then the whole file is rejected with HTTP 422, `code` `"parse_error"`, and `line` set to the
    offending line; nothing is stored.
-5. Given a malformed line anywhere in the file (for example a vertex with a non-numeric coordinate),
-   when the file is uploaded, then the whole file is rejected with HTTP 422, `code` `"parse_error"`,
-   and `line` set; nothing is stored. Partial geometry is never accepted.
+5. Given a malformed `v` or `f` line anywhere in the file (for example a vertex with a non-numeric
+   coordinate), when the file is uploaded, then the whole file is rejected with HTTP 422, `code`
+   `"parse_error"`, and `line` set; nothing is stored. Partial geometry is never accepted. Lines that
+   are neither `v` nor `f` are never validated (AC7).
 6. Given a file with vertices but no faces, when it is uploaded, then it is rejected with HTTP 422
    and `code` `"parse_error"`; nothing is stored. A file with no `v` or `f` records at all (an STL
-   renamed `.obj`, say) is the same case.
+   renamed `.obj`, say) is the same case. A zero-byte file is the route's `empty_file` case, as for STL,
+   and never reaches the parser.
 7. Given `mtllib`, `usemtl`, `o`, `g`, `s`, `vn`, `vt` or any other non-geometry line, when the
    file is uploaded, then those lines are ignored and the file loads normally.
 8. Given a file larger than 25 MB, when it is uploaded, then it is rejected with HTTP 413 and
