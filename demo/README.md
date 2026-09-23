@@ -12,12 +12,14 @@ implements → the spec author's tests → the first draft's version fails.
 | `spec-v2.md` = `specs/obj-support.md` | Approved |
 | `tests/test_obj_support.py` | Ten criterion tests — **yours, written before the handoff** |
 | `round-1/mesh.py` + `run-round-1.sh` | The failure exhibit: v1's parser against v2's criteria |
+| `BLIND-HANDOFF-REPORT.md` | What a fresh session reported when handed `spec-v2.md` blind on Sep 23: **10 of 10** |
 
 ## Verified
 ```
 demo/start before the build     13 passed, 10 red (the criterion tests)
 round 2 (from spec-v2)          23 passed
-round 1 (from spec-v1)          5 of 10 criteria FAIL
+round 1 (from spec-v1)          7 of 10 criteria FAIL
+blind handoff, Sep 23, tests withheld   10 of 10 author tests pass (BLIND-HANDOFF-REPORT.md)
 ```
 
 ## Before class
@@ -51,16 +53,17 @@ Do **not** ask it to write tests. If it asks a question, write the question on s
 proceed on its best judgement.
 
 **7:36 · Step 5 — your tests (3 min).** `make test`. Say who wrote `tests/test_obj_support.py` and when.
-Then the browser: upload `cube.obj`, watch it render, the format tag now reads `stl obj`.
+Then the browser: upload `cube.obj`, watch it render, the format tag now reads `obj stl`.
 
 **7:40 · Step 6 — the exhibit (4 min).** `bash demo/run-round-1.sh` — *this is what version one's
-criteria produced: five of ten.* Somebody will say "just fix the parser." The fix was the document.
+criteria produced: seven of ten.* Somebody will say "just fix the parser." The fix was the document.
 
 **7:44** back to `blind-handoff`, `what-you-saw`.
 
 ## Fallbacks
 - **Slow:** narrate the transcript → spec story.
 - **Generated code does not run:** say so — *the failure mode I warned you about* — then
-  `git stash -u && git checkout main && make test`. The finished parser is on `main`.
+  `git stash -u && git checkout main && make test`. The finished parser is on `main`, and
+  `demo/BLIND-HANDOFF-REPORT.md` is what the same prompt produced this morning: show that instead.
 - **Tooling gone:** `what-you-saw` from `spec-v1.md` vs `spec-v2.md` on screen. Eight minutes.
 - **Never debug live past 90 seconds.**

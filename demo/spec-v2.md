@@ -31,7 +31,8 @@ see it.
    when the file is uploaded, then the whole file is rejected with HTTP 422, `code` `"parse_error"`,
    and `line` set; nothing is stored. Partial geometry is never accepted.
 6. Given a file with vertices but no faces, when it is uploaded, then it is rejected with HTTP 422
-   and `code` `"parse_error"`; nothing is stored.
+   and `code` `"parse_error"`; nothing is stored. A file with no `v` or `f` records at all (an STL
+   renamed `.obj`, say) is the same case.
 7. Given `mtllib`, `usemtl`, `o`, `g`, `s`, `vn`, `vt` or any other non-geometry line, when the
    file is uploaded, then those lines are ignored and the file loads normally.
 8. Given a file larger than 25 MB, when it is uploaded, then it is rejected with HTTP 413 and
@@ -44,7 +45,8 @@ see it.
 ## 4. Scope and non-goals
 
 **In scope:** the `v` and `f` records of the OBJ format; polygon faces; relative indices; the error
-behaviour above; the format tag in the viewer updating to show `stl obj`.
+behaviour above; the format tag in the viewer updating from `stl` to `obj stl`, the order
+`GET /formats` returns.
 
 **Explicitly out of scope this cycle:** materials and textures (`mtllib`, `usemtl`, `.mtl` files);
 groups and objects (`o`, `g`); smoothing groups (`s`); normals and texture coordinates as data
@@ -58,7 +60,7 @@ No new endpoints. `POST /models?name=<file>.obj` with the file as the body, exac
 
 ```
 201 { "id": "…", "name": "cube.obj", "format": "obj", "triangle_count": 12,
-      "bbox": {"min":[0,0,0], "max":[1,1,1]}, "size_bytes": 231, "uploaded_at": … }
+      "bbox": {"min":[0,0,0], "max":[1,1,1]}, "size_bytes": 194, "uploaded_at": … }
 
 422 { "detail": "bad vertex: 'v 0 0 oops'", "code": "parse_error", "line": 5 }
 422 { "detail": "face references vertex 9 but only 3 are defined", "code": "parse_error", "line": 4 }
@@ -105,6 +107,6 @@ One test per criterion in `tests/test_obj_support.py`, named `test_ac<N>_…`, u
 
 - **Units.** The file has none and the viewer labels none. Design wants a unit in the info panel;
   parked in the meeting. Owner: Marta, for the viewer-pair spec.
-- Some exporters write `f` lines before all `v` lines are defined. The parser as specified resolves
-  indices at the face's line, so such a file is rejected. Is that acceptable? Nobody in the meeting
-  raised it; ask Dan.
+- Some exporters write `f` lines before all `v` lines are defined. **Binding for this cycle:** the
+  parser resolves indices at the face's line (§6), so such a file is rejected under AC4. Open only
+  whether a later cycle should accept it. Nobody in the meeting raised it; ask Dan.
