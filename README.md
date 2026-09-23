@@ -27,3 +27,26 @@ demo/                  the live-demo kit: first draft, review notes, approved sp
 
 The starter repository students use for the assignment is a different repo:
 <https://github.com/jmrthms/sdd-starter-repo>.
+
+## Replay the live build yourself
+
+Everything shown in class runs from `demo/start`:
+
+```bash
+git clone https://github.com/jmrthms/sdd-demo-meshview && cd sdd-demo-meshview
+git checkout demo/start && make setup && make test     # 13 pass; the ten OBJ criterion tests are red
+```
+
+1. In an agent session, ask for the draft: *Draft a feature specification for OBJ support from
+   `docs/meetings/2026-09-18-feature-review.md`, using the `how-to-write-a-spec` skill. Write it to
+   `specs/obj-support.md`.* Read it beside `demo/spec-v1.md` and `demo/REVIEW-NOTES.md` — find what
+   the room decided that the draft is silent about.
+2. Approve the corrected version: `cp demo/spec-v2.md specs/obj-support.md`.
+3. In a **fresh** session with no history: *Implement the feature specified in `specs/obj-support.md`.
+   Follow the conventions already in the repository.* Do not answer questions or correct it.
+4. `make test` — the ten criterion tests were written from the specification before step 3, not by
+   the session that built the code.
+5. `bash demo/run-round-1.sh` — what version one's criteria produced against the same tests.
+
+`demo/README.md` is the timed runbook for the session; `demo/BLIND-HANDOFF-REPORT.md` is what step 3
+reported when it was run blind on Sep 23.

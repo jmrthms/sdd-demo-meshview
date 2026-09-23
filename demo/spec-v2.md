@@ -1,7 +1,7 @@
 # Feature Specification — OBJ file support
 
 **Status:** approved · **Source:** `docs/meetings/2026-09-18-feature-review.md`
-**Author:** drafted by the agent from the recording, revised in review · **Reviewers:** the room, 7:24
+**Author:** drafted by the agent from the recording, revised in review · **Reviewed:** Sep 19, against the transcript
 
 ## 1. Intent
 
