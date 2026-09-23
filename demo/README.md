@@ -17,7 +17,7 @@ implements → the spec author's tests → the first draft's version fails.
 ```
 demo/start before the build     13 passed, 10 red (the criterion tests)
 round 2 (from spec-v2)          23 passed
-round 1 (from spec-v1)          5 of 10 criteria FAIL
+round 1 (from spec-v1)          7 of 10 criteria FAIL
 ```
 
 ## Before class
@@ -54,7 +54,7 @@ proceed on its best judgement.
 Then the browser: upload `cube.obj`, watch it render, the format tag now reads `stl obj`.
 
 **7:40 · Step 6 — the exhibit (4 min).** `bash demo/run-round-1.sh` — *this is what version one's
-criteria produced: five of ten.* Somebody will say "just fix the parser." The fix was the document.
+criteria produced: seven of ten.* Somebody will say "just fix the parser." The fix was the document.
 
 **7:44** back to `blind-handoff`, `what-you-saw`.
 
