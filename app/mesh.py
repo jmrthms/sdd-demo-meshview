@@ -104,52 +104,7 @@ def _parse_ascii_stl(data: bytes) -> Mesh:
     return mesh
 
 
-# ------------------------------------------------------------------ OBJ
-
-def parse_obj(data: bytes) -> Mesh:
-    """Wavefront OBJ, geometry only — see specs/obj-support.md.
-
-    Reads ``v`` and ``f``. Everything else (materials, groups, normals, texture coordinates)
-    is skipped without error. Polygon faces are fan-triangulated. Indices are 1-based;
-    negative indices are relative to the vertices defined so far. Any malformed line
-    rejects the whole file with its line number.
-    """
-    mesh = Mesh()
-    for n, raw in enumerate(data.decode("utf-8", errors="replace").splitlines(), start=1):
-        line = raw.split("#", 1)[0].strip()
-        if not line:
-            continue
-        parts = line.split()
-        kw, args = parts[0], parts[1:]
-        if kw == "v":
-            try:
-                mesh.vertices.append([float(args[0]), float(args[1]), float(args[2])])
-            except (IndexError, ValueError) as exc:
-                raise ParseError(f"bad vertex: {raw.strip()!r}", line=n) from exc
-        elif kw == "f":
-            if len(args) < 3:
-                raise ParseError(f"face with fewer than three vertices: {raw.strip()!r}", line=n)
-            idx = []
-            for tok in args:
-                try:
-                    i = int(tok.split("/", 1)[0])
-                except ValueError as exc:
-                    raise ParseError(f"bad face index {tok!r}", line=n) from exc
-                if i == 0:
-                    raise ParseError("face index 0 is not allowed (indices are 1-based)", line=n)
-                j = len(mesh.vertices) + i if i < 0 else i - 1
-                if not 0 <= j < len(mesh.vertices):
-                    raise ParseError(f"face references vertex {i} but only {len(mesh.vertices)} are defined", line=n)
-                idx.append(j)
-            for k in range(1, len(idx) - 1):          # fan triangulation
-                mesh.faces.append([idx[0], idx[k], idx[k + 1]])
-        # vt, vn, vp, mtllib, usemtl, o, g, s, l, p and anything unknown: ignored on purpose
-    if not mesh.faces:
-        raise ParseError("OBJ file contains no faces")
-    return mesh
-
-
-PARSERS = {"stl": parse_stl, "obj": parse_obj}
+PARSERS = {"stl": parse_stl}
 
 
 def parse(data: bytes, fmt: str) -> Mesh:
