@@ -35,7 +35,7 @@ repo. Ask the room for two undecided things. `demo-loop`, then switch.
 
 **7:19 · Step 1 — draft from the recording (4 min).** Type, aloud:
 > Draft a feature specification for OBJ support from `docs/meetings/2026-09-18-feature-review.md`,
-> using the spec-authoring skill. Write it to `specs/obj-support.md`.
+> using the `how-to-write-a-spec` skill. Write it to `specs/obj-support.md`.
 
 Narrate: it is reading a 24-minute meeting; section 6 is coming from the api-conventions skill.
 
