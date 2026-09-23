@@ -13,6 +13,7 @@ make run                     # http://127.0.0.1:8000 — the viewer;  /docs — 
 app/mesh.py            the Mesh shape and the parsers — a new format is a function registered in PARSERS
 app/routes/models.py   upload (raw body, ?name=), list, one model, its mesh
 app/static/index.html  the viewer (Three.js); draws whatever /models/{id}/mesh returns
+app/static/vendor/     Three.js r160 + OrbitControls, vendored — the viewer needs no network
 data/samples/          generated STL and OBJ files, including the awkward ones — see tests skill
 docs/meetings/         the recorded feature-review meeting the demo starts from
 specs/                 one specification per feature
